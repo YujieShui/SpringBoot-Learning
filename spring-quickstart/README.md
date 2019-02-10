@@ -86,3 +86,36 @@ public class QuickStart {
 }
 ```
 
+# SpringBoot Junit 进行单元测试示例
+
+添加依赖
+
+```
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-test</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+
+建立测试类
+
+```java
+@SpringBootTest(classes = QuickStart.class)
+@RunWith(SpringJUnit4ClassRunner.class)
+@WebAppConfiguration
+public class TestQuickStart {
+
+    @Resource
+    private QuickStart quickStart;
+
+    @Test
+    public void testSayHello(){
+        TestCase.assertEquals(this.quickStart.sayHello(),"Hello,World!");
+    }
+}
+```
+
+@SpringBootTest(classes = QuickStart.class) - 要测试哪一个类
+@RunWith(SpringJUnit4ClassRunner.class) - 用 SpringBoot 的 Junit 来测试(和一般 Junit 测试不一样)
+@WebAppConfiguration - 表示以一个 Web 应用的方式启动
