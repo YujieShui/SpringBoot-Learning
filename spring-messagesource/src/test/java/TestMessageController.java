@@ -22,4 +22,9 @@ public class TestMessageController {
     public void testEcho() {
         System.out.println(this.messageController.echo("shuiyujie"));
     }
+
+    @Test
+    public void testIndex(){
+        System.out.println(this.messageController.index());
+    }
 }

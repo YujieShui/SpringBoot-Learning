@@ -17,6 +17,7 @@
     <modules>
         <module>spring-quickstart</module>
         <module>spring-messagesource</module>
+        <module>springboot-thymeleaf</module>
     </modules>
 
     <dependencyManagement>
@@ -49,7 +50,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>	<!-- 设置程序执行的主类 -->
-                    <mainClass>com.shuiyujie.StartSpringBootMain</mainClass>
+                    <mainClass>com.com.shuiyujie.StartSpringBootMain</mainClass>
                 </configuration>
                 <executions>
                     <execution>
