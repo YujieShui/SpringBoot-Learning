@@ -16,6 +16,7 @@
 
     <modules>
         <module>spring-quickstart</module>
+        <module>spring-messagesource</module>
     </modules>
 
     <dependencyManagement>
@@ -27,17 +28,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
-            <!-- 配置自动加载的功能 -->
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>springloaded</artifactId>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-devtools</artifactId>
-            </dependency>
-
         </dependencies>
 
 
@@ -53,6 +43,21 @@
                     <source>${jdk.version}</source><!-- 源代码使用的开发版本 -->
                     <target>${jdk.version}</target><!-- 需要生成的目标class文件的编译版本 -->
                 </configuration>
+            </plugin>
+
+            <plugin>	<!-- 该插件的主要功能是进行项目的打包发布处理 -->
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>	<!-- 设置程序执行的主类 -->
+                    <mainClass>com.shuiyujie.StartSpringBootMain</mainClass>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
