@@ -1,3 +1,5 @@
+[TOC]
+
 # springboot 错误处理，数据校验错误
 
 SpringBoot 错误处理有三种情况
@@ -143,6 +145,95 @@ public class ErrorPageConfig implements ErrorPageRegistrar {
         errorPages[1] = new ErrorPage(HttpStatus.NOT_FOUND, "/error-404.html");
         errorPages[2] = new ErrorPage(HttpStatus.INTERNAL_SERVER_ERROR, "/error-500.html");
         registry.addErrorPages(errorPages);
+    }
+}
+```
+
+# SpringBoot 全局错误处理
+
+之前设置了错误页面，发生错误将会跳转到错误页面。
+
+```java
+/**
+ * 演示 500 错误
+ *
+ * @return
+ */
+@RequestMapping(value="/get")
+@ResponseBody
+public String get() {
+    System.out.println("除法计算：" + (10 / 0));
+    return "hello world" ;
+}
+```
+
+比如这样一个 10/0 的错误控制器跳转到 500 页面，这样就看不到详细的报错信息了。我们想看到类似控制台里面更加详细的报错信息。
+
+## 定义一个错误信息处理的页面
+
+新建一个错误界面`src/main/view/templates/error.html`
+
+```html
+!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+   <title>SpringBoot模版渲染</title>
+   <link rel="icon" type="image/x-icon" href="/images/mldn.ico"/>
+   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
+</head>
+<body>
+   <p th:text="${url}"/>
+   <p th:text="${exception.message}"/>
+</body>
+</html>
+```
+
+## 定义全局异常处理类
+
+```java
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+    // 定义错误显示页，error.html
+    public static final String DEFAULT_ERROR_VIEW = "error";
+
+    // 所有的异常都是Exception子类
+    @ExceptionHandler(Exception.class)
+    public Object defaultErrorHandler(HttpServletRequest request, Exception e) {
+        class ErrorInfo {
+            private Integer code;
+            private String message;
+            private String url;
+
+            public Integer getCode() {
+                return code;
+            }
+
+            public void setCode(Integer code) {
+                this.code = code;
+            }
+
+            public String getMessage() {
+                return message;
+            }
+
+            public void setMessage(String message) {
+                this.message = message;
+            }
+
+            public String getUrl() {
+                return url;
+            }
+
+            public void setUrl(String url) {
+                this.url = url;
+            }
+        }
+        ErrorInfo info = new ErrorInfo();
+        // 标记一个错误信息类型
+        info.setCode(100);
+        info.setMessage(e.getMessage());
+        info.setUrl(request.getRequestURL().toString());
+        return info;
     }
 }
 ```

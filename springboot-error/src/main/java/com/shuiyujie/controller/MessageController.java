@@ -19,11 +19,23 @@ import java.util.Iterator;
 @Controller
 public class MessageController extends AbstractBaseController {
 
+    /**
+     * 路由到表单页面
+     *
+     * @return
+     */
     @RequestMapping(value = "/addPre", method = RequestMethod.GET)
     public String addPre() {
         return "member_add";
     }
 
+    /**
+     * 演示表单提交时产生的数据校验错误
+     *
+     * @param vo
+     * @param result
+     * @return
+     */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ResponseBody
     public Object add(@Valid Member vo, BindingResult result) {
@@ -37,5 +49,17 @@ public class MessageController extends AbstractBaseController {
         } else {
             return vo;
         }
+    }
+
+    /**
+     * 演示 500 错误
+     *
+     * @return
+     */
+    @RequestMapping(value="/get")
+    @ResponseBody
+    public String get() {
+        System.out.println("除法计算：" + (10 / 0));
+        return "hello world" ;
     }
 }
