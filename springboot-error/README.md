@@ -19,7 +19,7 @@ SpringBoot 有数据校验的默认支持，该支持由 Hibernate 开发框架�
 
 但是我们还是要会使用这种方式处理数据验证错误，写了一个小 Demo，再接下来简单记录一下使用过程。
 
-# 添加错误信息配置文件
+## 添加错误信息配置文件
 
 `src/main/resources`目录中建立`ValidationMessages.properties`文件。文件中配置错误信息
 
@@ -34,7 +34,7 @@ member.salary.digits.error=工资格式错误
 member.birthday.notnull.error=生日不允许为空
 ```
 
-# VO 类添加注解
+## VO 类添加注解
 
 ```java
 SuppressWarnings("serial")
@@ -55,7 +55,7 @@ public class Member implements Serializable {
 }
 ```
 
-# 控制器配置校验
+## 控制器配置校验
 
 ```java
 @RequestMapping(value = "/add", method = RequestMethod.POST)
@@ -70,6 +70,79 @@ public Object add(@Valid Member vo, BindingResult result) {
         return result.getAllErrors();
     } else {
         return vo;
+    }
+}
+```
+
+# springboot 错误处理，配置错误页面
+
+错误页面配置在`src/main/view/static`目录下，比如叫 error-404.html
+
+## SringBoot 1.x 这样处理
+
+```java
+package com.shuiyujie.config;
+
+import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
+import org.springframework.boot.web.servlet.ErrorPage;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+
+/**
+ * @author shui
+ * @create 2019-02-12
+ **/
+@Configuration
+public class ErrorPageConfig {
+
+    @Bean
+    public EmbeddedServletContainerCustomizer containerCustomizer() {
+        return new EmbeddedServletContainerCustomizer() {
+            @Override
+            public void customize(
+                    ConfigurableEmbeddedServletContainer container) {
+                ErrorPage errorPage400 = new ErrorPage(HttpStatus.BAD_REQUEST,
+                        "/error-400.html");
+                ErrorPage errorPage404 = new ErrorPage(HttpStatus.NOT_FOUND,
+                        "/error-404.html");
+                ErrorPage errorPage500 = new ErrorPage(
+                        HttpStatus.INTERNAL_SERVER_ERROR, "/error-500.html");
+                container.addErrorPages(errorPage400, errorPage404,
+                        errorPage500);
+            }
+        };
+    }
+}
+```
+
+## SringBoot 2.x 这样处理
+
+在SpringBoot2中没有`EmbeddedServletContainerCustomizer`这个类了，要这样处理
+
+```java
+ackage com.shuiyujie.config;
+
+import org.springframework.boot.web.server.ErrorPage;
+import org.springframework.boot.web.server.ErrorPageRegistrar;
+import org.springframework.boot.web.server.ErrorPageRegistry;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
+
+/**
+ * @author shui
+ * @create 2019-02-12
+ **/
+@Component
+public class ErrorPageConfig implements ErrorPageRegistrar {
+    @Override
+    public void registerErrorPages(ErrorPageRegistry registry) {
+        ErrorPage[] errorPages = new ErrorPage[3];
+        errorPages[0] = new ErrorPage(HttpStatus.NOT_FOUND, "/error-400.html");
+        errorPages[1] = new ErrorPage(HttpStatus.NOT_FOUND, "/error-404.html");
+        errorPages[2] = new ErrorPage(HttpStatus.INTERNAL_SERVER_ERROR, "/error-500.html");
+        registry.addErrorPages(errorPages);
     }
 }
 ```
